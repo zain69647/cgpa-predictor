@@ -343,7 +343,7 @@ export default function CGPACalculator() {
                         <div className="w-24">
                           <label className="mb-1 block text-xs text-muted-foreground">Credit Hrs</label>
                           <Input
-                            type="number" min="1" placeholder="3"
+                            type="number" min="0" placeholder="3"
                             value={subject.creditHours}
                             onChange={(e) => updateSubject(subject.id, "creditHours", e.target.value)}
                             className="h-11 text-base"
