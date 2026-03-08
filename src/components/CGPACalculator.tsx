@@ -41,7 +41,7 @@ const createSubject = (): Subject => ({
   id: crypto.randomUUID(),
   name: "",
   marks: "",
-  creditHours: "3",
+  creditHours: "",
 });
 
 type Mode = "simple" | "advanced";
