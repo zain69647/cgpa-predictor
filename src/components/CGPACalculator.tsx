@@ -343,7 +343,7 @@ export default function CGPACalculator() {
                         <div className="w-24">
                           <label className="mb-1 block text-xs text-muted-foreground">Credit Hrs</label>
                           <Input
-                            type="number" min="1" placeholder="3"
+                            type="number" min="0" placeholder="3"
                             value={subject.creditHours}
                             onChange={(e) => updateSubject(subject.id, "creditHours", e.target.value)}
                             className="h-11 text-base"
@@ -408,12 +408,12 @@ export default function CGPACalculator() {
                 />
 
                 <h3 className="mb-4 text-center text-sm font-medium uppercase tracking-wider opacity-80 relative z-10">
-                  Estimated Results
+                  Expected Results
                 </h3>
                 <div className="grid grid-cols-2 gap-4 relative z-10">
                   {[
-                    { value: results.semesterGPA, label: "Semester GPA" },
-                    { value: results.newCGPA, label: "New CGPA" },
+                    { value: results.semesterGPA, label: "Expected Semester GPA" },
+                    { value: results.newCGPA, label: "Expected New CGPA" },
                   ].map(({ value, label }, i) => (
                     <motion.div
                       key={label}
