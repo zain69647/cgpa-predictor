@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type Easing } from "framer-motion";
 import { Plus, Trash2, RotateCcw, GraduationCap, BookOpen, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -56,7 +56,7 @@ const stagger = {
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" as Easing } },
 };
 
 const scaleIn = {
@@ -71,7 +71,7 @@ const pulseGlow = {
       "0 0 20px 4px hsl(210 70% 35% / 0.15)",
       "0 0 0 0 hsl(210 70% 35% / 0)",
     ],
-    transition: { duration: 2, repeat: Infinity, ease: "easeInOut" },
+    transition: { duration: 2, repeat: Infinity, ease: "easeInOut" as Easing },
   },
 };
 
