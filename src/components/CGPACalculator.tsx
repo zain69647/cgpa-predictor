@@ -106,7 +106,7 @@ export default function CGPACalculator() {
 
   const results = useMemo(() => {
     const valid = subjects.filter(
-      (s) => s.marks && s.creditHours && !isNaN(Number(s.marks)) && !isNaN(Number(s.creditHours))
+      (s) => s.marks !== "" && s.creditHours !== "" && !isNaN(Number(s.marks)) && !isNaN(Number(s.creditHours))
     );
     if (valid.length === 0) return null;
 
