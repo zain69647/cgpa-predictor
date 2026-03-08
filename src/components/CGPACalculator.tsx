@@ -408,12 +408,12 @@ export default function CGPACalculator() {
                 />
 
                 <h3 className="mb-4 text-center text-sm font-medium uppercase tracking-wider opacity-80 relative z-10">
-                  Estimated Results
+                  Expected Results
                 </h3>
                 <div className="grid grid-cols-2 gap-4 relative z-10">
                   {[
-                    { value: results.semesterGPA, label: "Semester GPA" },
-                    { value: results.newCGPA, label: "New CGPA" },
+                    { value: results.semesterGPA, label: "Expected Semester GPA" },
+                    { value: results.newCGPA, label: "Expected New CGPA" },
                   ].map(({ value, label }, i) => (
                     <motion.div
                       key={label}
