@@ -1,12 +1,18 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence, type Easing } from "framer-motion";
-import { Plus, Trash2, RotateCcw, GraduationCap, BookOpen, ChevronDown } from "lucide-react";
+import { Plus, Trash2, RotateCcw, GraduationCap, BookOpen, ChevronDown, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 interface Subject {
   id: string;
-  name: string;
   marks: string;
   creditHours: string;
 }
@@ -39,7 +45,6 @@ const getGradeLetter = (marks: number): string => {
 
 const createSubject = (): Subject => ({
   id: crypto.randomUUID(),
-  name: "",
   marks: "",
   creditHours: "",
 });
@@ -77,6 +82,8 @@ const pulseGlow = {
 
 export default function CGPACalculator() {
   const [mode, setMode] = useState<Mode | null>(null);
+  const [showInstructions, setShowInstructions] = useState(false);
+  const [pendingMode, setPendingMode] = useState<Mode | null>(null);
   const [currentCGPA, setCurrentCGPA] = useState("");
   const [completedHours, setCompletedHours] = useState("");
   const [subjects, setSubjects] = useState<Subject[]>([createSubject()]);
@@ -100,9 +107,20 @@ export default function CGPACalculator() {
   };
 
   const warnings = useMemo(
-    () => subjects.filter((s) => s.marks && Number(s.marks) > 100).map((s) => s.name || "Unnamed"),
+    () => subjects.filter((s) => s.marks && Number(s.marks) > 100).map((_, i) => `Subject ${i + 1}`),
     [subjects]
   );
+
+  const handleModeSelect = (m: Mode) => {
+    setPendingMode(m);
+    setShowInstructions(true);
+  };
+
+  const confirmMode = () => {
+    setShowInstructions(false);
+    if (pendingMode) setMode(pendingMode);
+    setPendingMode(null);
+  };
 
   const results = useMemo(() => {
     const valid = subjects.filter(
@@ -180,7 +198,7 @@ export default function CGPACalculator() {
                 variants={fadeUp}
                 whileHover={{ scale: 1.02, y: -2 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={() => setMode(m)}
+                onClick={() => handleModeSelect(m)}
                 className="w-full rounded-2xl bg-card p-5 text-left shadow-sm border border-border hover:border-primary/40 hover:shadow-md transition-shadow"
               >
                 <h2 className="text-lg font-semibold text-card-foreground">{title}</h2>
@@ -188,6 +206,27 @@ export default function CGPACalculator() {
               </motion.button>
             ))}
           </motion.div>
+
+          {/* Instructions Dialog */}
+          <Dialog open={showInstructions} onOpenChange={setShowInstructions}>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <Info className="h-5 w-5 text-primary" />
+                  How to Use
+                </DialogTitle>
+                <DialogDescription className="text-base pt-2">
+                  Write the <span className="font-semibold text-foreground">expected marks</span> and{" "}
+                  <span className="font-semibold text-foreground">credit hours</span> of each subject.
+                  <br />
+                  <span className="text-sm text-muted-foreground mt-2 block">(Mentioned on your slip)</span>
+                </DialogDescription>
+              </DialogHeader>
+              <Button onClick={confirmMode} className="mt-2 w-full">
+                Got it, let's go!
+              </Button>
+            </DialogContent>
+          </Dialog>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -324,12 +363,6 @@ export default function CGPACalculator() {
                         )}
                       </div>
 
-                      <Input
-                        placeholder="Subject name" value={subject.name}
-                        onChange={(e) => updateSubject(subject.id, "name", e.target.value)}
-                        className="mb-3 h-11 text-base"
-                      />
-
                       <div className="flex gap-3">
                         <div className="flex-1">
                           <label className="mb-1 block text-xs text-muted-foreground">Expected Marks</label>
@@ -395,7 +428,6 @@ export default function CGPACalculator() {
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 className="rounded-2xl bg-primary p-5 text-primary-foreground shadow-lg overflow-hidden relative"
               >
-                {/* Decorative animated circles */}
                 <motion.div
                   className="absolute -top-6 -right-6 h-24 w-24 rounded-full bg-primary-foreground/5"
                   animate={{ scale: [1, 1.2, 1], rotate: [0, 90, 0] }}
