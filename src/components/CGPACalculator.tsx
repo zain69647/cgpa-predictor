@@ -205,7 +205,27 @@ export default function CGPACalculator() {
                 <p className="mt-1 text-sm text-muted-foreground">{desc}</p>
               </motion.button>
             ))}
+
+            <motion.div variants={fadeUp}>
+              <Link
+                to="/marksheet"
+                className="block w-full rounded-2xl bg-card p-5 text-left shadow-sm border border-primary/30 hover:border-primary/60 hover:shadow-md transition-shadow"
+              >
+                <h2 className="flex items-center gap-2 text-lg font-semibold text-card-foreground">
+                  <FileSearch className="h-5 w-5 text-primary" />
+                  Upload Marksheet
+                  <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+                    Beta
+                  </span>
+                </h2>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Upload your detailed marks certificate (PDF). Edit any subject's marks and see
+                  which improvement exam lifts your CGPA the most.
+                </p>
+              </Link>
+            </motion.div>
           </motion.div>
+
 
           {/* Instructions Dialog */}
           <Dialog open={showInstructions} onOpenChange={setShowInstructions}>
