@@ -14,7 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      marksheet_uploads: {
+        Row: {
+          created_at: string
+          id: string
+          original_filename: string
+          parse_error: string | null
+          parsed: Json | null
+          session_id: string
+          storage_path: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          original_filename: string
+          parse_error?: string | null
+          parsed?: Json | null
+          session_id: string
+          storage_path: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          original_filename?: string
+          parse_error?: string | null
+          parsed?: Json | null
+          session_id?: string
+          storage_path?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
