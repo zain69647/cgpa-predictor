@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
+import { Link } from "react-router-dom";
 import { motion, AnimatePresence, type Easing } from "framer-motion";
-import { Plus, Trash2, RotateCcw, GraduationCap, BookOpen, ChevronDown, Info } from "lucide-react";
+import { Plus, Trash2, RotateCcw, GraduationCap, BookOpen, ChevronDown, Info, FileSearch } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
