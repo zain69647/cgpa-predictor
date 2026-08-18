@@ -94,3 +94,23 @@ export const improvementGain = (subjects: FlatSubject[], subjectId: string): num
   );
   return improved - base;
 };
+
+/**
+ * Maximum CGPA gain available from a subject: what the CGPA becomes if this
+ * subject were retaken for the top grade (A / 4.0). Low marks + high credit
+ * hours naturally rank highest.
+ */
+export const maxImprovementGain = (subjects: FlatSubject[], subjectId: string): number => {
+  const target = subjects.find((s) => s.id === subjectId);
+  if (!target || target.marks === null || target.creditHours <= 0) return 0;
+  const top = GRADE_BANDS[0];
+  if (getGradePoint(target.marks) >= top.gp) return 0;
+  const base = cgpaOf(subjects);
+  const improved = cgpaOf(
+    subjects.map((s) => (s.id === subjectId ? { ...s, marks: top.min } : s)),
+  );
+  return improved - base;
+};
+
+export const TOP_BAND_MARKS = GRADE_BANDS[0].min;
+
