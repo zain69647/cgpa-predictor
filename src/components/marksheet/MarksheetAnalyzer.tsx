@@ -47,7 +47,7 @@ export default function MarksheetAnalyzer({ semesters, onStartOver }: Props) {
         .map((s) => ({ subject: s, gain: improvementGain(current, s.id) }))
         .filter((row) => row.gain > 0.0005)
         .sort((a, b) => b.gain - a.gain)
-        .slice(0, 6),
+        .slice(0, 3),
     [current],
   );
 
@@ -68,26 +68,26 @@ export default function MarksheetAnalyzer({ semesters, onStartOver }: Props) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ type: "spring", stiffness: 300, damping: 24 }}
-        className="rounded-2xl bg-primary p-5 text-primary-foreground shadow-lg"
+        className="sticky top-4 z-10 rounded-2xl bg-primary p-4 text-primary-foreground shadow-lg"
       >
-        <div className="grid grid-cols-2 gap-4">
-          <div className="rounded-xl bg-primary-foreground/10 p-4 text-center">
-            <div className="text-3xl font-bold">{originalCgpa.toFixed(2)}</div>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="rounded-xl bg-primary-foreground/10 p-3 text-center">
+            <div className="text-2xl font-bold">{originalCgpa.toFixed(2)}</div>
             <div className="mt-1 text-xs opacity-80">Current CGPA</div>
           </div>
-          <div className="rounded-xl bg-primary-foreground/10 p-4 text-center">
+          <div className="rounded-xl bg-primary-foreground/10 p-3 text-center">
             <motion.div
               key={newCgpa.toFixed(2)}
               initial={{ scale: 1.2, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="text-3xl font-bold"
+              className="text-2xl font-bold"
             >
               {newCgpa.toFixed(2)}
             </motion.div>
             <div className="mt-1 text-xs opacity-80">After your edits</div>
           </div>
         </div>
-        <div className="mt-3 flex items-center justify-between text-sm opacity-90">
+        <div className="mt-2 flex items-center justify-between text-sm opacity-90">
           <span>Total credit hours: {credits}</span>
           <span>
             {delta === 0 ? "No change" : `${delta > 0 ? "+" : ""}${delta.toFixed(3)} CGPA`}
@@ -97,7 +97,7 @@ export default function MarksheetAnalyzer({ semesters, onStartOver }: Props) {
           <Button
             variant="secondary"
             size="sm"
-            className="mt-4 w-full gap-2"
+            className="mt-3 w-full gap-2"
             onClick={() => setEdits({})}
           >
             <RotateCcw className="h-4 w-4" /> Restore original marks
@@ -117,7 +117,7 @@ export default function MarksheetAnalyzer({ semesters, onStartOver }: Props) {
             <h2 className="text-lg font-semibold text-card-foreground">Improvement priority</h2>
           </div>
           <p className="mb-3 text-sm text-muted-foreground">
-            Subjects that would lift your CGPA the most if you reached the next grade.
+            Top subjects that would lift your CGPA if you reached the next grade.
           </p>
           <ul className="space-y-2">
             {priorities.map(({ subject, gain }) => (
@@ -151,10 +151,10 @@ export default function MarksheetAnalyzer({ semesters, onStartOver }: Props) {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.05 }}
-          className="rounded-2xl bg-card p-5 shadow-sm"
+          className="rounded-2xl bg-card p-4 shadow-sm"
         >
           <div className="mb-3 flex items-baseline justify-between">
-            <h2 className="text-lg font-semibold text-card-foreground">
+            <h2 className="text-base font-semibold text-card-foreground">
               {subjects[0].semesterName}
             </h2>
             <span className="text-sm text-muted-foreground">
@@ -162,24 +162,24 @@ export default function MarksheetAnalyzer({ semesters, onStartOver }: Props) {
             </span>
           </div>
 
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {subjects.map((subject) => {
               const marks = subject.marks;
               return (
                 <div
                   key={subject.id}
-                  className="rounded-xl border border-border bg-background p-3"
+                  className="rounded-xl border border-border bg-background p-2.5"
                 >
-                  <div className="mb-2 min-w-0">
-                    <div className="truncate text-sm font-medium text-foreground">
+                  <div className="mb-1.5 min-w-0">
+                    <div className="truncate text-sm font-medium leading-tight text-foreground">
                       {subject.code ? `${subject.code} — ` : ""}
                       {subject.title}
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      {subject.creditHours} credit hours
+                      {subject.creditHours} cr
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex flex-wrap items-center gap-2">
                     <Input
                       type="number"
                       min="0"
@@ -188,16 +188,16 @@ export default function MarksheetAnalyzer({ semesters, onStartOver }: Props) {
                       onChange={(e) =>
                         setEdits((prev) => ({ ...prev, [subject.id]: e.target.value }))
                       }
-                      className="h-10 w-24 text-base"
+                      className="h-8 w-20 text-sm"
                       aria-label={`Marks for ${subject.title}`}
                     />
                     {marks !== null && (
                       <>
-                        <span className="rounded-lg bg-primary/10 px-2.5 py-1 text-sm font-semibold text-primary">
+                        <span className="rounded-md bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
                           {getGradeLetter(marks)}
                         </span>
-                        <span className="text-sm text-muted-foreground">
-                          GP: {getGradePoint(marks).toFixed(1)}
+                        <span className="text-xs text-muted-foreground">
+                          GP {getGradePoint(marks).toFixed(1)}
                         </span>
                       </>
                     )}
