@@ -47,7 +47,7 @@ export default function MarksheetAnalyzer({ semesters, onStartOver }: Props) {
         .map((s) => ({ subject: s, gain: improvementGain(current, s.id) }))
         .filter((row) => row.gain > 0.0005)
         .sort((a, b) => b.gain - a.gain)
-        .slice(0, 6),
+        .slice(0, 3),
     [current],
   );
 
