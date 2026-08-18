@@ -44,12 +44,13 @@ export default function MarksheetAnalyzer({ semesters, onStartOver }: Props) {
   const priorities = useMemo(
     () =>
       current
-        .map((s) => ({ subject: s, gain: improvementGain(current, s.id) }))
+        .map((s) => ({ subject: s, gain: maxImprovementGain(current, s.id) }))
         .filter((row) => row.gain > 0.0005)
-        .sort((a, b) => b.gain - a.gain)
+        .sort((a, b) => b.gain - a.gain || b.subject.creditHours - a.subject.creditHours)
         .slice(0, 3),
     [current],
   );
+
 
   const bySemester = useMemo(() => {
     const groups = new Map<number, FlatSubject[]>();
