@@ -95,19 +95,28 @@ export const improvementGain = (subjects: FlatSubject[], subjectId: string): num
   return improved - base;
 };
 
+/** Realistic improvement-exam target marks used for priority ranking. */
+export const IMPROVEMENT_TARGET_MARKS = 75;
+
+/** Marks a subject would realistically be lifted to in an improvement exam. */
+export const improvementTargetMarks = (marks: number): number | null => {
+  if (marks >= GRADE_BANDS[0].min) return null;
+  return Math.max(IMPROVEMENT_TARGET_MARKS, nextBandMarks(marks) ?? 0);
+};
+
 /**
- * Maximum CGPA gain available from a subject: what the CGPA becomes if this
- * subject were retaken for the top grade (A / 4.0). Low marks + high credit
- * hours naturally rank highest.
+ * CGPA gain available from a subject if it were retaken and lifted to the
+ * realistic improvement target (75 marks). Low marks + high credit hours
+ * naturally rank highest.
  */
 export const maxImprovementGain = (subjects: FlatSubject[], subjectId: string): number => {
   const target = subjects.find((s) => s.id === subjectId);
   if (!target || target.marks === null || target.creditHours <= 0) return 0;
-  const top = GRADE_BANDS[0];
-  if (getGradePoint(target.marks) >= top.gp) return 0;
+  const goal = improvementTargetMarks(target.marks);
+  if (goal === null || goal <= target.marks) return 0;
   const base = cgpaOf(subjects);
   const improved = cgpaOf(
-    subjects.map((s) => (s.id === subjectId ? { ...s, marks: top.min } : s)),
+    subjects.map((s) => (s.id === subjectId ? { ...s, marks: goal } : s)),
   );
   return improved - base;
 };

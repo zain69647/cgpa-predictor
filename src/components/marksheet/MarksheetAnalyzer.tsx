@@ -8,8 +8,8 @@ import {
   flattenSemesters,
   getGradeLetter,
   getGradePoint,
+  improvementTargetMarks,
   maxImprovementGain,
-  nextBandMarks,
   totalCredits,
   type FlatSubject,
   type ParsedSemester,
@@ -133,7 +133,7 @@ export default function MarksheetAnalyzer({ semesters, onStartOver }: Props) {
                   </div>
                   <div className="text-xs text-muted-foreground">
                     {subject.semesterName} · {subject.creditHours} cr ·{" "}
-                    {subject.marks ?? "—"} → {nextBandMarks(subject.marks ?? 0)} marks
+                    {subject.marks ?? "—"} → {improvementTargetMarks(subject.marks ?? 0) ?? "—"} marks
                   </div>
                 </div>
                 <span className="shrink-0 rounded-lg bg-primary/10 px-2 py-1 font-semibold text-primary">
