@@ -8,7 +8,7 @@ import {
   flattenSemesters,
   getGradeLetter,
   getGradePoint,
-  improvementGain,
+  maxImprovementGain,
   nextBandMarks,
   totalCredits,
   type FlatSubject,
