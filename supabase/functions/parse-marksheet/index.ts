@@ -2,13 +2,19 @@ import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const SYSTEM_PROMPT = `You extract structured academic data from Punjab University detailed marks certificates.
+The input is the PDF text with its original line/table layout preserved (one table row per line, columns separated by multiple spaces).
 Return ONLY JSON matching this shape:
 {"semesters":[{"name":"Semester 1","subjects":[{"code":"CS-101","title":"Programming Fundamentals","creditHours":3,"marks":78,"totalMarks":100}]}]}
 Rules:
-- Group subjects under the semester they belong to, in chronological order.
+- Work line by line, in document order. A semester heading (e.g. "Semester 1", "1st Semester", "Semester-II", a session/roll block) starts a new semester; EVERY subject row after it belongs to that semester until the next semester heading appears.
+- Never move a subject into a different semester, never merge two semesters, and never split one semester into two. The number of subjects per semester must exactly match the rows printed under that heading.
+- One subject row = one subject object. Do not create extra objects for continuation lines (a long subject title wrapped onto the next line belongs to the previous subject), and do not drop rows.
+- Ignore non-subject rows: totals, "Total", "GPA", "CGPA", "Grand Total", credit summaries, headers, footers, page markers, result/remarks lines.
 - creditHours and marks must be numbers. If marks are out of something other than 100, set totalMarks accordingly, otherwise 100.
 - If a subject's obtained marks are missing, use null for marks.
+- Keep semesters in chronological order and name them "Semester 1", "Semester 2", ... following the document order.
 - Never invent subjects that are not in the text. Output JSON only, no markdown fences.`;
+
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
@@ -47,7 +53,7 @@ Deno.serve(async (req) => {
       headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: 'openai/gpt-5.6-sol',
-        reasoning_effort: 'none',
+        reasoning_effort: 'medium',
         response_format: { type: 'json_object' },
         messages: [
           { role: 'system', content: SYSTEM_PROMPT },
