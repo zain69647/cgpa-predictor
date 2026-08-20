@@ -63,15 +63,32 @@ Deno.serve(async (req) => {
     });
 
     if (!aiResponse.ok) {
-      const details = await aiResponse.text();
-      console.error(`AI gateway failed [${aiResponse.status}]: ${details}`);
+      const retryAfter = aiResponse.headers.get('Retry-After');
+      const gatewayError = await aiResponse.json().catch(() => null);
+      console.error(`AI gateway failed [${aiResponse.status}]`);
+
+      if (aiResponse.status === 402 || aiResponse.status === 403) {
+        const requires = gatewayError?.props?.requires;
+        const message =
+          typeof gatewayError?.message === 'string' && gatewayError.message.trim()
+            ? gatewayError.message
+            : aiResponse.status === 402
+              ? 'AI credits are exhausted for this app. Please add credits and try again.'
+              : 'AI analysis is disabled for this app. A workspace admin needs to enable it.';
+        return json(
+          { error: message, status: aiResponse.status, props: { requires, retryable: false } },
+          aiResponse.status,
+        );
+      }
+
       const message =
         aiResponse.status === 429
-          ? 'The analyzer is busy right now. Please try again in a minute.'
-          : aiResponse.status === 402
-            ? 'AI credits are exhausted for this app. Please add credits and try again.'
-            : 'Could not analyze the marksheet.';
-      return json({ error: message, status: aiResponse.status, details }, aiResponse.status);
+          ? 'The analyzer is busy right now. Please wait before trying again.'
+          : 'Could not analyze the marksheet.';
+      return json(
+        { error: message, status: aiResponse.status, retryAfter },
+        aiResponse.status,
+      );
     }
 
     const completion = await aiResponse.json();

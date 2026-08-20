@@ -26,6 +26,32 @@ const getSessionId = () => {
 const safeName = (name: string) =>
   name.replace(/[^a-zA-Z0-9._-]/g, "_").slice(-80) || "marksheet.pdf";
 
+const readFunctionError = async (error: unknown) => {
+  const fallback = "Could not analyze the marksheet.";
+  const context = (error as { context?: Response })?.context;
+  if (!context) return fallback;
+
+  try {
+    const body = (await context.clone().json()) as {
+      error?: string;
+      status?: number;
+      props?: { requires?: string; retryable?: boolean };
+    };
+
+    if (context.status === 402 || body.status === 402) {
+      return body.error ?? "AI credits are exhausted for this app. Please add credits and try again.";
+    }
+
+    if (context.status === 403 || body.status === 403) {
+      return body.error ?? "AI analysis is currently disabled for this app.";
+    }
+
+    return body.error ?? fallback;
+  } catch {
+    return fallback;
+  }
+};
+
 interface Props {
   onParsed: (semesters: ParsedSemester[]) => void;
 }
@@ -63,19 +89,13 @@ export default function MarksheetUpload({ onParsed }: Props) {
       });
 
       if (fnError) {
-        let message = "Could not analyze the marksheet.";
-        try {
-          const ctx = (fnError as { context?: Response }).context;
-          if (ctx) {
-            const parsedBody = JSON.parse(await ctx.text());
-            if (parsedBody?.error) message = parsedBody.error;
-          }
-        } catch {
-          /* keep default message */
-        }
-        throw new Error(message);
+        setError(await readFunctionError(fnError));
+        return;
       }
-      if (data?.error) throw new Error(data.error);
+      if (data?.error) {
+        setError(data.error);
+        return;
+      }
       onParsed(data.semesters as ParsedSemester[]);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong.");
