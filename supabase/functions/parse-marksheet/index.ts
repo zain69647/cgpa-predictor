@@ -75,10 +75,14 @@ Deno.serve(async (req) => {
             : aiResponse.status === 402
               ? 'AI credits are exhausted for this app. Please add credits and try again.'
               : 'AI analysis is disabled for this app. A workspace admin needs to enable it.';
-        return json(
-          { error: message, status: aiResponse.status, props: { requires, retryable: false } },
-          aiResponse.status,
-        );
+        // Keep the gateway status in the payload, but return a successful function
+        // transport response. The client can then render this terminal state instead
+        // of the functions SDK throwing an unhandled runtime error for the HTTP 402.
+        return json({
+          error: message,
+          status: aiResponse.status,
+          props: { requires, retryable: false },
+        });
       }
 
       const message =
